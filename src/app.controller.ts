@@ -10,6 +10,22 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  // TODO: อัพเดตข้อมูล
+  @Post('user/update')
+  getUserByname(
+    @Body()
+    body: {
+      name: string;
+      car: string;
+      price: number;
+      date: string;
+      count: number;
+    },
+  ): string {
+    return this.appService.getUserByname(body);
+  }
+
+  // TODO: ค้นหา
   @Get('user/calculate')
   getNameCalculate(
     @Query() query: { name: string; price: number; count: number },
@@ -17,23 +33,9 @@ export class AppController {
     return this.appService.getNameCalculate(query);
   }
 
-  // TODO: จำไว้ดีๆนะจ้ะ !!!
-  @Get('user/query')
-  getHelloByQuery(
-    @Query() query: { name: string; price: number; count: number },
-  ): string {
-    return this.appService.getHelloByQuery(query);
-  }
-
+  // TODO: ค้นหาด้วย param
   @Get('user/:id')
   getHelloById(@Param('id') id: string): string {
     return this.appService.getHelloById(id);
-  }
-
-  @Post('user')
-  getUserByname(
-    @Body() body: { name: string; price: number; count: number },
-  ): string {
-    return this.appService.getUserByname(body);
   }
 }
