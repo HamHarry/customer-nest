@@ -5,14 +5,23 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('user')
+  @Get('')
   getHello(): string {
     return this.appService.getHello();
   }
 
+  @Get('profile/:userid/:carid/:productid')
+  getProfileById(
+    @Param('userid') userId: string,
+    @Param('carid') carId: string,
+    @Param('productid') productId: string,
+  ) {
+    return this.appService.getProfileById(userId, carId, productId);
+  }
+
   // TODO: อัพเดตข้อมูล
-  @Post('user/update')
-  getUserByname(
+  @Post('profile/update')
+  getProfileByname(
     @Body()
     body: {
       name: string;
@@ -22,20 +31,14 @@ export class AppController {
       count: number;
     },
   ): string {
-    return this.appService.getUserByname(body);
+    return this.appService.getProfileByname(body);
   }
 
   // TODO: ค้นหา
-  @Get('user/calculate')
-  getNameCalculate(
+  @Get('profile/calculate')
+  getProfileCalculate(
     @Query() query: { name: string; price: number; count: number },
   ): string {
-    return this.appService.getNameCalculate(query);
-  }
-
-  // TODO: ค้นหาด้วย param
-  @Get('user/:id')
-  getHelloById(@Param('id') id: string): string {
-    return this.appService.getHelloById(id);
+    return this.appService.getProfileCalculate(query);
   }
 }
