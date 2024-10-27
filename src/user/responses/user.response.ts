@@ -1,6 +1,24 @@
+import { Expose, Type } from 'class-transformer';
+
 export class UserResponse {
-  readonly id: string;
-  readonly fname: string;
-  readonly lname: string;
-  readonly phone: string;
+  @Expose()
+  _id: string;
+
+  @Expose()
+  fname: string;
+
+  @Expose()
+  lname: string;
+
+  @Expose()
+  phone: string;
+
+  @Expose()
+  gender: string;
+}
+
+export class UserResponseList {
+  @Type(() => UserResponse)
+  @Expose()
+  data: UserResponse[];
 }

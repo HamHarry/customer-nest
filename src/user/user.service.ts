@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserRequest } from './requests/create_user.request';
-import { UserResponse } from './responses/user.response';
+import { UserResponse, UserResponseList } from './responses/user.response';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
+import { modelMapper } from 'src/utils/mapper.utils';
 
 @Injectable()
 export class UserService {
@@ -11,19 +12,35 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async createUser(createUserRequest: CreateUserRequest) {
-    const createdUser = await new this.userModel(createUserRequest).save();
-    return createdUser;
+  async createUser(
+    createUserRequest: CreateUserRequest,
+  ): Promise<UserResponse> {
+    try {
+      const { userData } = createUserRequest;
+      const createdUser = await new this.userModel(userData).save();
+
+      const user = modelMapper(UserResponse, createdUser);
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
-  async getUserMongo() {
+  async getUserMongos(): Promise<UserResponse[]> {
     const userRerults = await this.userModel.find();
-    return userRerults;
+    if (!userRerults) throw new NotFoundException('user not found');
+
+    const users = modelMapper(UserResponseList, { data: userRerults }).data;
+    return users;
   }
 
   async getUserMongoByID(userId: string): Promise<UserResponse> {
-    const userRerults = await this.userModel.findById(userId);
-    return userRerults as UserResponse;
+    const userRerult = await this.userModel.findById(userId);
+    if (!userRerult) throw new NotFoundException('user not found');
+
+    const user = modelMapper(UserResponse, userRerult);
+    return user;
   }
 
   async updateUserByID(userId: string, updateUserRequest: CreateUserRequest) {
@@ -37,7 +54,7 @@ export class UserService {
   async deleteAllUsers() {
     const deletedUsers = await this.userModel.deleteMany();
     return deletedUsers;
-  }
+  } //class-transformer
 
   async deleteUserById(userId: string) {
     const deletedUserById = await this.userModel.findByIdAndDelete(userId);

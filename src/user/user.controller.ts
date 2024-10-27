@@ -21,7 +21,7 @@ export class UserController {
 
   @Get()
   getUserMongo() {
-    return this.userService.getUserMongo();
+    return this.userService.getUserMongos();
   }
 
   @Get(':userId')

@@ -1,6 +1,21 @@
+import { Expose, Type } from 'class-transformer';
+
 export class ProductResponse {
-  readonly id: string;
-  readonly name: string;
-  readonly size: string;
-  readonly price: number;
+  @Expose()
+  _id: string;
+
+  @Expose()
+  name: string;
+
+  @Expose()
+  size: string;
+
+  @Expose()
+  price: number;
+}
+
+export class ProductResponseList {
+  @Type(() => ProductResponse)
+  @Expose()
+  data: ProductResponse[];
 }

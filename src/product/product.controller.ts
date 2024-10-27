@@ -21,7 +21,7 @@ export class ProductController {
 
   @Get()
   getProduct() {
-    return this.productService.getProduct();
+    return this.productService.getProducts();
   }
 
   @Get(':productId')

@@ -3,6 +3,11 @@ import { ProductRequest } from './requests/product.request';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { Model } from 'mongoose';
+import {
+  ProductResponse,
+  ProductResponseList,
+} from './responses/product.response';
+import { modelMapper } from 'src/utils/mapper.utils';
 
 @Injectable()
 export class ProductService {
@@ -12,29 +17,38 @@ export class ProductService {
   ) {}
 
   async create(productRequest: ProductRequest) {
-    const createdProduct = await new this.userModel(productRequest).save();
     try {
+      const createdProduct = await new this.userModel(productRequest).save();
       return createdProduct;
     } catch (error) {
-      if (error) throw new NotFoundException('Product not found');
+      console.log(error);
+      throw error;
     }
   }
 
-  async getProduct() {
-    const productRerults = await this.userModel.find();
+  async getProducts(): Promise<ProductResponse[]> {
     try {
-      return productRerults;
+      const productRerults = await this.userModel.find();
+      if (!productRerults) throw new NotFoundException('product not found');
+
+      const products = modelMapper(ProductResponseList, {
+        data: productRerults,
+      }).data;
+
+      return products;
     } catch (error) {
-      if (error) throw new NotFoundException('Get Product not found');
+      console.log(error);
+      throw error;
     }
   }
 
   async getProductById(productId: string) {
-    const productById = await this.userModel.findById(productId);
     try {
+      const productById = await this.userModel.findById(productId);
       return productById;
     } catch (error) {
-      if (error) throw new NotFoundException('Get Product By ID not found');
+      console.log(error);
+      throw error;
     }
   }
 
@@ -42,14 +56,15 @@ export class ProductService {
     productId: string,
     updateProductRequest: ProductRequest,
   ) {
-    const updatedProduct = await this.userModel.findByIdAndUpdate(
-      productId,
-      updateProductRequest,
-    );
     try {
+      const updatedProduct = await this.userModel.findByIdAndUpdate(
+        productId,
+        updateProductRequest,
+      );
       return updatedProduct;
     } catch (error) {
-      if (error) throw new NotFoundException('Update Product By ID not found');
+      console.log(error);
+      throw error;
     }
   }
 
