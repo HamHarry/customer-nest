@@ -1,52 +1,65 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductRequest } from './requests/product.request';
-import { ProductResponse } from './responses/product.response';
+import { InjectModel } from '@nestjs/mongoose';
+import { Product, ProductDocument } from './schemas/product.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ProductService {
-  create(productRequest: ProductRequest) {
-    return productRequest;
+  constructor(
+    @InjectModel(Product.name)
+    private readonly userModel: Model<ProductDocument>,
+  ) {}
+
+  async create(productRequest: ProductRequest) {
+    const createdProduct = await new this.userModel(productRequest).save();
+    try {
+      return createdProduct;
+    } catch (error) {
+      if (error) throw new NotFoundException('Product not found');
+    }
   }
 
-  getProduct(productId: string): ProductResponse {
-    const products: ProductResponse[] = [
-      {
-        id: '1',
-        name: 'KATS Costings',
-        size: 'L',
-        price: 6900,
-      },
-      {
-        id: '2',
-        name: 'KATS Costings',
-        size: 'M',
-        price: 4900,
-      },
-      {
-        id: '3',
-        name: 'GUN Production',
-        size: 'L',
-        price: 5900,
-      },
-      {
-        id: '4',
-        name: 'GUN Production',
-        size: 'M',
-        price: 3900,
-      },
-      {
-        id: '5',
-        name: 'GUN Production',
-        size: 'S',
-        price: 2500,
-      },
-    ];
+  async getProduct() {
+    const productRerults = await this.userModel.find();
+    try {
+      return productRerults;
+    } catch (error) {
+      if (error) throw new NotFoundException('Get Product not found');
+    }
+  }
 
-    if (!productId) throw new NotFoundException('Product not found');
+  async getProductById(productId: string) {
+    const productById = await this.userModel.findById(productId);
+    try {
+      return productById;
+    } catch (error) {
+      if (error) throw new NotFoundException('Get Product By ID not found');
+    }
+  }
 
-    const findedproduct = products.find((product) => {
-      return product.id === productId;
-    });
-    return findedproduct;
+  async updateProductById(
+    productId: string,
+    updateProductRequest: ProductRequest,
+  ) {
+    const updatedProduct = await this.userModel.findByIdAndUpdate(
+      productId,
+      updateProductRequest,
+    );
+    try {
+      return updatedProduct;
+    } catch (error) {
+      if (error) throw new NotFoundException('Update Product By ID not found');
+    }
+  }
+
+  async deleteProduct() {
+    const deletedProduct = await this.userModel.deleteMany();
+    return deletedProduct;
+  }
+
+  async deleteProductById(productId: string) {
+    const deletedProduct = await this.userModel.findByIdAndDelete(productId);
+    return deletedProduct;
   }
 }
