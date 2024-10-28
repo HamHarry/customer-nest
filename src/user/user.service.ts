@@ -37,7 +37,7 @@ export class UserService {
 
   async getUserMongoByID(userId: string): Promise<UserResponse> {
     const userRerult = await this.userModel.findById(userId);
-    if (!userRerult) throw new NotFoundException('user not found');
+    if (!userRerult) throw new NotFoundException('userById not found');
 
     const user = modelMapper(UserResponse, userRerult);
     return user;
@@ -54,7 +54,7 @@ export class UserService {
   async deleteAllUsers() {
     const deletedUsers = await this.userModel.deleteMany();
     return deletedUsers;
-  } //class-transformer
+  }
 
   async deleteUserById(userId: string) {
     const deletedUserById = await this.userModel.findByIdAndDelete(userId);
