@@ -44,17 +44,15 @@ export class UserService {
   }
 
   async updateUserByID(userId: string, updateUserRequest: CreateUserRequest) {
-    const updatedUser = await this.userModel.findByIdAndUpdate(
-      userId,
-      updateUserRequest,
-    );
+    const user = updateUserRequest.userData;
+    const updatedUser = await this.userModel.findByIdAndUpdate(userId, user);
     return updatedUser;
   }
 
   async deleteAllUsers() {
     const deletedUsers = await this.userModel.deleteMany();
     return deletedUsers;
-  } //class-transformer
+  }
 
   async deleteUserById(userId: string) {
     const deletedUserById = await this.userModel.findByIdAndDelete(userId);
