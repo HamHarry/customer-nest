@@ -5,9 +5,9 @@ import {
   IsOptional,
   ValidateNested,
 } from 'class-validator';
-import { GenderEnum } from 'src/enums/user.enum';
+import { SummaryEnum } from 'src/enums/summay.enum';
 
-export class UserRequest {
+export class SummaryRequest {
   @IsNotEmpty()
   fname: string;
 
@@ -15,15 +15,15 @@ export class UserRequest {
   lname: string;
 
   @IsOptional()
-  phone?: string;
+  price?: number;
 
-  @IsEnum(GenderEnum)
+  @IsEnum(SummaryEnum)
   gender: string;
 }
 
-export class CreateUserRequest {
-  @Type(() => UserRequest)
+export class CreateSummaryRequest {
+  @Type(() => SummaryRequest)
   @ValidateNested()
   @IsNotEmpty()
-  userData: UserRequest;
+  summaryData: SummaryRequest;
 }

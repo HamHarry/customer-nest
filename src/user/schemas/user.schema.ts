@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { genderEnum } from '../requests/create_user.request';
+import { GenderEnum } from 'src/enums/user.enum';
 
 export type UserDocument = User & Document;
 
@@ -17,7 +17,7 @@ export class User {
   phone: string;
 
   // default values
-  @Prop({ default: genderEnum.MALE })
+  @Prop({ default: GenderEnum.MALE })
   gender: string;
 }
 

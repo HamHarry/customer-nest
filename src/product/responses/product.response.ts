@@ -12,6 +12,9 @@ export class ProductResponse {
 
   @Expose()
   price: number;
+
+  @Expose()
+  type: string;
 }
 
 export class ProductResponseList {

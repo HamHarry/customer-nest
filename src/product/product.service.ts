@@ -1,5 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ProductRequest } from './requests/product.request';
+import {
+  CreateProductRequest,
+  ProductRequest,
+} from './requests/product.request';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product, ProductDocument } from './schemas/product.schema';
 import { Model } from 'mongoose';
@@ -13,12 +16,22 @@ import { modelMapper } from 'src/utils/mapper.utils';
 export class ProductService {
   constructor(
     @InjectModel(Product.name)
-    private readonly userModel: Model<ProductDocument>,
+    private readonly productModel: Model<ProductDocument>,
   ) {}
 
-  async create(productRequest: ProductRequest) {
+  async create(createProductRequest: CreateProductRequest) {
     try {
-      const createdProduct = await new this.userModel(productRequest).save();
+      const product = createProductRequest.productData;
+      const newName = `${product.type}'_'${product.name}`;
+      const newPrice = product.price / 32;
+
+      const body = {
+        name: newName,
+        price: newPrice,
+        size: product.size,
+      };
+
+      const createdProduct = await new this.productModel(body).save();
       return createdProduct;
     } catch (error) {
       console.log(error);
@@ -28,7 +41,7 @@ export class ProductService {
 
   async getProducts(): Promise<ProductResponse[]> {
     try {
-      const productRerults = await this.userModel.find();
+      const productRerults = await this.productModel.find();
       if (!productRerults) throw new NotFoundException('product not found');
 
       const products = modelMapper(ProductResponseList, {
@@ -44,8 +57,27 @@ export class ProductService {
 
   async getProductById(productId: string) {
     try {
-      const productById = await this.userModel.findById(productId);
-      return productById;
+      const productById = await this.productModel.findById(productId);
+      const product = modelMapper(ProductResponse, productById);
+      const nameList = product.name.split('_');
+
+      let price = product.price * 32;
+      let name = nameList?.length > 1 ? nameList[1] : '';
+      let type = nameList?.length > 0 ? nameList[0] : '';
+
+      if (type && !name) {
+        name = `${type}`;
+        type = '';
+        price = product.price;
+      }
+
+      const body = {
+        name,
+        type,
+        size: product.size,
+        price, // bath
+      };
+      return body;
     } catch (error) {
       console.log(error);
       throw error;
@@ -57,7 +89,7 @@ export class ProductService {
     updateProductRequest: ProductRequest,
   ) {
     try {
-      const updatedProduct = await this.userModel.findByIdAndUpdate(
+      const updatedProduct = await this.productModel.findByIdAndUpdate(
         productId,
         updateProductRequest,
       );
@@ -69,12 +101,12 @@ export class ProductService {
   }
 
   async deleteProduct() {
-    const deletedProduct = await this.userModel.deleteMany();
+    const deletedProduct = await this.productModel.deleteMany();
     return deletedProduct;
   }
 
   async deleteProductById(productId: string) {
-    const deletedProduct = await this.userModel.findByIdAndDelete(productId);
+    const deletedProduct = await this.productModel.findByIdAndDelete(productId);
     return deletedProduct;
   }
 }
