@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+  CreateProductListRequest,
   CreateProductRequest,
   ProductRequest,
 } from './requests/product.request';
@@ -32,6 +33,32 @@ export class ProductService {
       };
 
       const createdProduct = await new this.productModel(body).save();
+      return createdProduct;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async createProductList(createProductListRequest: CreateProductListRequest) {
+    try {
+      const products = createProductListRequest.productData;
+
+      const newProductList = [];
+      products.forEach((product) => {
+        const newName = `${product.type}'_'${product.name}`;
+        const newPrice = product.price / 32;
+
+        const newProduct = {
+          name: newName,
+          price: newPrice,
+          size: product.size,
+        };
+
+        newProductList.push(newProduct);
+      });
+
+      const createdProduct = await this.productModel.insertMany(newProductList);
       return createdProduct;
     } catch (error) {
       console.log(error);

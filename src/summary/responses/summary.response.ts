@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { IsNotEmpty, ValidateNested } from 'class-validator';
+import { ValidateNested } from 'class-validator';
 
 export class SummaryResponse {
   @Expose()
@@ -20,6 +20,6 @@ export class SummaryResponse {
 export class SummaryResponseList {
   @Type(() => SummaryResponse)
   @ValidateNested()
-  @IsNotEmpty()
+  @Expose()
   data: SummaryResponse[];
 }

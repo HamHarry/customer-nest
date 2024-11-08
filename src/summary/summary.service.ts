@@ -42,7 +42,6 @@ export class SummaryService {
       const summarys = modelMapper(SummaryResponseList, {
         data: summary,
       }).data;
-      console.log(summarys);
 
       return summarys;
     } catch (error) {

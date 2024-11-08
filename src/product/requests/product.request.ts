@@ -21,3 +21,10 @@ export class CreateProductRequest {
   @IsNotEmpty()
   productData: ProductRequest;
 }
+
+export class CreateProductListRequest {
+  @Type(() => ProductRequest)
+  @ValidateNested()
+  @IsNotEmpty()
+  productData: ProductRequest[];
+}
